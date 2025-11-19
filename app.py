@@ -152,7 +152,7 @@ def retrieve_password(email: str):
     return jsonify(message="That email doesn't exist"), 401
 
 @app.route('/planet_details/<int:planet_id>', methods=['GET'])
-def planet_details(planet_id):
+def planet_details(planet_id: int):
     planet = Planet.query.filter_by(planet_id=planet_id).first()
     if planet:
         result = planet_schema.dump(planet)
@@ -198,6 +198,16 @@ def update_planet():
         db.session.commit()
         return jsonify(message='You updated a planet'), 202
     return jsonify(message='That planet doesn\'t exist'), 404
+
+@app.route('/remove_planet/<int:planet_id>', methods=['DELETE'])
+@jwt_required()
+def remove_planet(planet_id: int):
+    planet = Planet.query.filter_by(planet_id=planet_id).first()
+    if planet:
+        db.session.delete(planet)
+        db.session.commit()
+        return jsonify(message='You deleted a planet'), 202
+    return jsonify(message='That planet doesnt exist'), 404
 
 # ----- Database Models -----
 
